@@ -3,7 +3,15 @@
 # This is an extension for the module 'Enumerable'
 module Enumerable
   # Your code goes here
-  def my_each_with_index(&block); end
+  def my_each_with_index
+    unless is_a?(Hash)
+      0.upto(length - 1) { |index| yield(self[index], index) }
+      return self
+    end
+
+    0.upto(keys.length - 1) { |index| yield(keys[index], self[keys[index]], index) }
+    self
+  end
 end
 
 # You will first have to define my_each
