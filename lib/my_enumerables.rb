@@ -4,12 +4,10 @@
 module Enumerable
   # Your code goes here
   def my_each_with_index
-    unless is_a?(Hash)
-      0.upto(length - 1) { |index| yield(self[index], index) }
-      return self
-    end
+    return to_enum(:each_with_index) unless block_given?
 
-    0.upto(keys.length - 1) { |index| yield(keys[index], self[keys[index]], index) }
+    length.times { |index| yield(self[index], index) } if is_a?(Array)
+    length.times { |index| yield([keys[index], self[keys[index]]], index) } if is_a?(Hash)
     self
   end
 
@@ -93,6 +91,8 @@ end
 class Array
   # Define my_each here
   def my_each
+    return to_enum unless block_given?
+
     length.times { |index| yield(self[index]) }
     self
   end
@@ -101,7 +101,37 @@ end
 # Custom methods for 'Hash' class
 class Hash
   def my_each
+    return to_enum unless block_given?
+
     keys.length.times { |index| yield(keys[index], self[keys[index]]) }
     self
   end
 end
+
+# puts 'my_each vs each'
+# numbers = [1, 2, 3, 4, 5]
+# p(numbers.my_each { |item| p item })
+# p(numbers.each { |item| p item })
+# p numbers.my_each
+# p numbers.each
+# puts "\n"
+# hashes = { a: 'a', b: 'b', c: 'c' }
+# p(hashes.my_each { |key, value| puts "#{key}: #{value}" })
+# p(hashes.each { |key, value| puts "#{key}: #{value}" })
+# p hashes.my_each
+# p hashes.each
+# puts "\n\n"
+#
+# puts 'my_each_with_index vs each_with_index'
+# numbers = [1, 2, 3, 4, 5]
+# p(numbers.my_each_with_index { |value, index| p "#{index}: #{value}" })
+# p(numbers.each_with_index { |value, index| p "#{index}: #{value}" })
+# p numbers.my_each_with_index
+# p numbers.each_with_index
+# puts "\n"
+# hashes = { a: 'a', b: 'b', c: 'c' }
+# p(hashes.my_each_with_index { |value, index| p "#{index}: #{value}" })
+# p(hashes.each_with_index { |value, index| p "#{index}: #{value}" })
+# p hashes.my_each_with_index
+# p hashes.each_with_index
+# puts "\n\n"
