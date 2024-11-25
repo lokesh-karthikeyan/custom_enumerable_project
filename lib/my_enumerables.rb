@@ -29,9 +29,19 @@ module Enumerable
   def my_all?
     result = true
     length.times do |index|
-      result = yield(self[index]) ? true : false if is_a?(Array)
-      result = yield(keys[index], self[keys[index]]) ? true : false if is_a?(Hash)
+      (result = yield(self[index]) ? true : false) if is_a?(Array)
+      (result = yield(keys[index], self[keys[index]]) ? true : false) if is_a?(Hash)
       break if result.eql?(false)
+    end
+    result
+  end
+
+  def my_any?
+    result = false
+    length.times do |index|
+      (result = yield(self[index]) ? true : false) if is_a?(Array)
+      (result = yield(keys[index], self[keys[index]]) ? true : false) if is_a?(Hash)
+      break if result.eql?(true)
     end
     result
   end
