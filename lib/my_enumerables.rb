@@ -66,6 +66,16 @@ module Enumerable
     end
     count
   end
+
+  def my_map
+    modified_data = self.class.new
+
+    length.times do |index|
+      (modified_data << yield(self[index])) if is_a?(Array)
+      (modified_data[keys[index]] = yield(self[keys[index]])) if is_a?(Hash)
+    end
+    modified_data
+  end
 end
 
 # You will first have to define my_each
