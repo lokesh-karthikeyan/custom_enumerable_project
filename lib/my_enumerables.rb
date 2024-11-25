@@ -76,6 +76,14 @@ module Enumerable
     end
     modified_data
   end
+
+  def my_inject(args)
+    accumulator = args.nil? ? first : args
+    length.times do |index|
+      accumulator = yield(accumulator, self[index])
+    end
+    accumulator
+  end
 end
 
 # You will first have to define my_each
