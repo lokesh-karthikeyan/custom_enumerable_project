@@ -45,6 +45,16 @@ module Enumerable
     end
     result
   end
+
+  def my_none?
+    result = true
+    length.times do |index|
+      (result = yield(self[index]) ? false : true) if is_a?(Array)
+      (result = yield(keys[index], self[keys[index]]) ? false : true) if is_a?(Hash)
+      break if result.eql?(false)
+    end
+    result
+  end
 end
 
 # You will first have to define my_each
