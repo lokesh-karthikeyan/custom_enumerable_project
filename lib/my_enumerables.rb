@@ -25,6 +25,16 @@ module Enumerable
     filtered_items
   end
   # rubocop:enable Metrics/AbcSize
+
+  def my_all?
+    result = nil
+    length.times do |index|
+      result = yield(self[index]) ? true : false if is_a?(Array)
+      result = yield(keys[index], self[keys[index]]) ? true : false if is_a?(Hash)
+      break if result.eql?(false)
+    end
+    result
+  end
 end
 
 # You will first have to define my_each
