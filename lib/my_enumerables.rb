@@ -55,6 +55,17 @@ module Enumerable
     end
     result
   end
+
+  def my_count
+    return length unless block_given?
+
+    count = 0
+    length.times do |index|
+      (count += 1 if yield(self[index])) if is_a?(Array)
+      (count += 1 if yield(keys[index], self[keys[index]])) if is_a?(Hash)
+    end
+    count
+  end
 end
 
 # You will first have to define my_each
