@@ -27,7 +27,7 @@ module Enumerable
   # rubocop:enable Metrics/AbcSize
 
   def my_all?
-    result = nil
+    result = true
     length.times do |index|
       result = yield(self[index]) ? true : false if is_a?(Array)
       result = yield(keys[index], self[keys[index]]) ? true : false if is_a?(Hash)
