@@ -62,13 +62,20 @@ module Enumerable
     modified_data
   end
 
-  def my_inject(args)
-    accumulator = args.nil? ? first : args
-    length.times do |index|
-      accumulator = yield(accumulator, self[index])
-    end
+  # rubocop:disable Metrics/PerceivedComplexity, Metrics/CyclomaticComplexity
+  def my_inject(initial = nil, second = nil)
+    array = is_a?(Array) ? self : to_a
+
+    symbol = initial if initial.is_a?(Symbol)
+    symbol = second if second.is_a?(Symbol)
+
+    accumulator = initial if initial.is_a?(Integer)
+
+    array.my_each { |item| accumulator = accumulator ? accumulator.send(symbol, item) : item } if symbol
+    array.my_each { |item| accumulator = accumulator ? yield(accumulator, item) : item } if block_given?
     accumulator
   end
+  # rubocop:enable Metrics/PerceivedComplexity, Metrics/CyclomaticComplexity
 end
 
 # You will first have to define my_each
@@ -210,3 +217,22 @@ end
 # my_proc = proc { |value| value if value.even? }
 # p numbers.my_map(my_proc)
 # puts "\n\n"
+
+# puts 'my_inject vs inject'
+# numbers = [1, 2, 3, 4, 5]
+# p(numbers.my_inject { |sum, n| sum * n })
+# p(numbers.inject { |sum, n| sum * n })
+#
+# def multiply_els(arr)
+#   arr.my_inject { |sum, n| sum * n }
+# end
+#
+# p multiply_els([2, 4, 5])
+# p (5..10).inject(1) { |product, n| product * n }
+# p (5..10).my_inject(1) { |product, n| product * n }
+#
+# p (5..10).inject(1, :*)
+# p (5..10).my_inject(1, :*)
+#
+# p (5..10).inject(:+)
+# p (5..10).my_inject(:+)
