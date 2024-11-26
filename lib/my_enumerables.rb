@@ -20,14 +20,11 @@ module Enumerable
     filtered_items
   end
 
-  def my_all?
-    result = true
-    length.times do |index|
-      (result = yield(self[index]) ? true : false) if is_a?(Array)
-      (result = yield(keys[index], self[keys[index]]) ? true : false) if is_a?(Hash)
-      break if result.eql?(false)
-    end
-    result
+  def my_all?(pattern = nil, &block)
+    my_each { |element| return false unless block.call(element) } if block_given?
+    my_each { |element| return false unless element } unless block_given?
+    my_each { |element| return false unless element.is_a?(pattern) } unless pattern.nil?
+    true
   end
 
   def my_any?
@@ -148,3 +145,19 @@ end
 # p(hashes.select { |_key, value| value.odd? })
 # p hashes.my_select
 # p hashes.select
+
+# puts 'my_all? vs all?'
+# numbers = [1, 2, 3, 4, 5]
+# correct_numbers = [2, 4, 6, 8, 10]
+# p(numbers.my_all?(&:even?))
+# p(numbers.all?(&:even?))
+# puts "\n"
+# p(correct_numbers.my_all?(&:even?))
+# p(correct_numbers.all?(&:even?))
+# puts "\n"
+# p numbers.my_all?(Numeric)
+# p numbers.all?(Numeric)
+# puts "\n"
+# p numbers.my_all?
+# p numbers.all?
+# puts "\n\n"
