@@ -27,15 +27,14 @@ module Enumerable
     true
   end
 
-  def my_any?
-    result = false
-    length.times do |index|
-      (result = yield(self[index]) ? true : false) if is_a?(Array)
-      (result = yield(keys[index], self[keys[index]]) ? true : false) if is_a?(Hash)
-      break if result.eql?(true)
-    end
-    result
+  # rubocop:disable Metrics/CyclomaticComplexity
+  def my_any?(pattern = nil, &block)
+    my_each { |element| return true if block.call(element) } if block_given?
+    my_each { |element| return true if element } unless block_given? || pattern
+    my_each { |element| return true if element.is_a?(pattern) } unless pattern.nil?
+    false
   end
+  # rubocop:enable Metrics/CyclomaticComplexity
 
   def my_none?
     result = true
@@ -160,4 +159,20 @@ end
 # puts "\n"
 # p numbers.my_all?
 # p numbers.all?
+# puts "\n\n"
+
+# puts 'my_any? vs any?'
+# numbers = [1, 2, 3, 4, 5]
+# wrong_numbers = [1, 3, 5, 7, 9]
+# p(numbers.my_any?(&:even?))
+# p(numbers.any?(&:even?))
+# p(wrong_numbers.my_any?(&:even?))
+# p(wrong_numbers.any?(&:even?))
+# puts "\n"
+# p numbers.my_any?
+# p numbers.any?
+# p numbers.my_any?(Integer)
+# p numbers.any?(Integer)
+# p numbers.my_any?(String)
+# p numbers.any?(String)
 # puts "\n\n"
