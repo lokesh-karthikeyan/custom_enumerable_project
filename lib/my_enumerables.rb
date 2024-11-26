@@ -11,18 +11,14 @@ module Enumerable
     self
   end
 
-  # rubocop:disable Metrics/AbcSize
   def my_select
+    return to_enum(:select) unless block_given?
+
     filtered_items = self.class.new
-    length.times do |index|
-      filtered_items << self[index] if filtered_items.is_a?(Array) && yield(self[index])
-      if filtered_items.is_a?(Hash) && yield(keys[index], self[keys[index]])
-        filtered_items[keys[index]] = self[keys[index]]
-      end
-    end
+    my_each { |element| filtered_items << element if yield(element) } if is_a?(Array)
+    my_each { |key, value| filtered_items[key] = value if yield(key, value) } if is_a?(Hash)
     filtered_items
   end
-  # rubocop:enable Metrics/AbcSize
 
   def my_all?
     result = true
@@ -135,3 +131,20 @@ end
 # p hashes.my_each_with_index
 # p hashes.each_with_index
 # puts "\n\n"
+
+# puts 'my_select vs select'
+# numbers = [1, 2, 3, 4, 5]
+# p(numbers.my_select(&:even?))
+# p(numbers.select(&:even?))
+# p(numbers.my_select(&:odd?))
+# p(numbers.select(&:odd?))
+# p numbers.my_select
+# p numbers.select
+# puts "\n"
+# hashes = { a: 1, b: 2, c: 3, d: 4, e: 5 }
+# p(hashes.my_select { |_key, value| value.even? })
+# p(hashes.select { |_key, value| value.even? })
+# p(hashes.my_select { |_key, value| value.odd? })
+# p(hashes.select { |_key, value| value.odd? })
+# p hashes.my_select
+# p hashes.select
