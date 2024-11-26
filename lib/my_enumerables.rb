@@ -52,13 +52,13 @@ module Enumerable
     count
   end
 
-  def my_map
+  def my_map(arg = nil, &block)
+    return to_enum(:map) unless block_given? && arg.nil?
+
     modified_data = self.class.new
 
-    length.times do |index|
-      (modified_data << yield(self[index])) if is_a?(Array)
-      (modified_data[keys[index]] = yield(self[keys[index]])) if is_a?(Hash)
-    end
+    my_each { |element| modified_data << yield(element) } if is_a?(Array)
+    my_each { |key, value| modified_data[key] = block.call(key, value) } if is_a?(Hash)
     modified_data
   end
 
@@ -195,4 +195,18 @@ end
 # p ary.my_count(2)
 # p(ary.count(&:even?))
 # p(ary.my_count(&:even?))
+# puts "\n\n"
+
+# puts 'my_map vs map'
+# numbers = [1, 2, 3, 4, 5]
+# p(numbers.my_map { |value| value })
+# p(numbers.map { |value| value })
+# p(numbers.my_map { |value| value if value.even? })
+# p(numbers.map { |value| value if value.even? })
+# p numbers.my_map
+# p numbers.map
+# my_proc = proc { |value| value }
+# p numbers.my_map(my_proc)
+# my_proc = proc { |value| value if value.even? }
+# p numbers.my_map(my_proc)
 # puts "\n\n"
