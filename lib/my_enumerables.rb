@@ -36,14 +36,11 @@ module Enumerable
   end
   # rubocop:enable Metrics/CyclomaticComplexity
 
-  def my_none?
-    result = true
-    length.times do |index|
-      (result = yield(self[index]) ? false : true) if is_a?(Array)
-      (result = yield(keys[index], self[keys[index]]) ? false : true) if is_a?(Hash)
-      break if result.eql?(false)
-    end
-    result
+  def my_none?(pattern = nil, &block)
+    my_each { |element| return false if element.is_a?(pattern) } if pattern
+    my_each { |element| return false if block.call(element) } if block_given?
+    my_each { |element| return false if element } unless block_given?
+    true
   end
 
   def my_count
@@ -175,4 +172,19 @@ end
 # p numbers.any?(Integer)
 # p numbers.my_any?(String)
 # p numbers.any?(String)
+# puts "\n\n"
+
+# puts 'my_none? vs none?'
+# numbers = [1, 2, 3, 4, 5]
+# wrong_numbers = [1, 3, 5, 7, 9]
+# p(numbers.my_none?(&:even?))
+# p(numbers.none?(&:even?))
+# p(wrong_numbers.my_none?(&:even?))
+# p(wrong_numbers.none?(&:even?))
+# p [].my_none?
+# p [].none?
+# p [nil, true].my_none?
+# p [nil, true].none?
+# p [].my_none?(Float)
+# p [].none?(Float)
 # puts "\n\n"
