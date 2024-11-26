@@ -43,14 +43,12 @@ module Enumerable
     true
   end
 
-  def my_count
-    return length unless block_given?
+  def my_count(item = nil, &block)
+    return length unless block_given? || !item.nil?
 
     count = 0
-    length.times do |index|
-      (count += 1 if yield(self[index])) if is_a?(Array)
-      (count += 1 if yield(keys[index], self[keys[index]])) if is_a?(Hash)
-    end
+    my_each { |element| count += 1 if element.eql?(item) } if item
+    my_each { |element| count += 1 if block.call(element) } if block_given?
     count
   end
 
@@ -187,4 +185,14 @@ end
 # p [nil, true].none?
 # p [].my_none?(Float)
 # p [].none?(Float)
+# puts "\n\n"
+
+# puts 'my_count vs count'
+# ary = [1, 2, 4, 2]
+# p ary.count
+# p ary.my_count
+# p ary.count(2)
+# p ary.my_count(2)
+# p(ary.count(&:even?))
+# p(ary.my_count(&:even?))
 # puts "\n\n"
